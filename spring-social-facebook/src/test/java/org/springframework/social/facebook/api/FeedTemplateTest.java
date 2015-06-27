@@ -212,14 +212,21 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 		mockServer.verify();
 	}
 
-	@Test(expected = DuplicateStatusException.class)
-	public void updateStatus_duplicate() {
+	@Test
+	public void updateStatus_duplicate() throws Exception {
 		mockServer.expect(requestTo(fbUrl("me/feed")))
 				.andExpect(method(POST))
 				.andExpect(header("Authorization", "OAuth someAccessToken"))
 				.andExpect(content().string("message=Duplicate"))
 			.andRespond(withBadRequest().body(jsonResource("error-duplicate-status")).contentType(MediaType.APPLICATION_JSON));
-		facebook.feedOperations().updateStatus("Duplicate");
+		
+		try {
+			facebook.feedOperations().updateStatus("Duplicate");
+			fail();
+		} catch (DuplicateStatusException e) {
+			assertEquals("Duplicate status message", e.getMessage());
+			assertEquals("facebook", e.getProviderId());
+		}
 	}
 
 	@Test
@@ -323,10 +330,7 @@ public class FeedTemplateTest extends AbstractFacebookApiTest {
 				.andExpect(content().string(requestBody))
 				.andRespond(withSuccess("{\"id\":\"123456_78901234\"}", MediaType.APPLICATION_JSON));
 		PostData newPost = new PostData("123456789")
-				.link("someLink")
-				.name("some name")
-				.caption("some caption")
-				.description("some description")
+				.link("someLink", null, "some name", "some caption", "some description")
 				.message("Hello Facebook World");
 		assertEquals("123456_78901234", facebook.feedOperations().post(newPost));
 		mockServer.verify();		

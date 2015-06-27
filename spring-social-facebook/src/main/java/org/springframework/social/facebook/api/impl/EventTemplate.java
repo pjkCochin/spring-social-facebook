@@ -109,15 +109,15 @@ class EventTemplate implements EventOperations {
 	}
 	
 	public void acceptInvitation(String eventId) {
-		graphApi.post(eventId, "attending", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "attending", new LinkedMultiValueMap<String, Object>());
 	}
 
 	public void maybeInvitation(String eventId) {
-		graphApi.post(eventId, "maybe", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "maybe", new LinkedMultiValueMap<String, Object>());
 	}
 
 	public void declineInvitation(String eventId) {
-		graphApi.post(eventId, "declined", new LinkedMultiValueMap<String, String>());
+		graphApi.post(eventId, "declined", new LinkedMultiValueMap<String, Object>());
 	}
 	
 	public PagedList<Event> search(String query) {
@@ -138,6 +138,6 @@ class EventTemplate implements EventOperations {
 		return graphApi.fetchConnections(userId, "events/" + status, Invitation.class, parameters);
 	}
 	
-	private static final String[] ALL_FIELDS = { "id", "cover", "description", "end_time", "is_date_only", "name", 
-			"owner", "parent_group", "privacy", "start_time", "ticket_uri", "timezone", "updated_time"};
+	private static final String[] ALL_FIELDS = { "id", "cover", "description", "end_time", "is_date_only", "name", "owner", 
+		"parent_group", "privacy", "start_time", "ticket_uri", "timezone", "updated_time", "place"};
 }

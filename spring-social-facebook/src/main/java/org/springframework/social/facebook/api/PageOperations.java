@@ -36,6 +36,13 @@ public interface PageOperations {
 	Page getPage(String pageId);
 	
 	/**
+	 * Updates page information.
+	 * Requires that the application is granted "manage_pages" permission and that the authenticated user be an administrator of the page.
+	 * @param pageUpdate a {@link PageUpdate} object that carries the fields to update on the page.
+	 */
+	void updatePage(PageUpdate pageUpdate);
+	
+	/**
 	 * Checks whether the logged-in user for this session is an admin of the page with the given page ID.
 	 * Requires "manage_pages" permission.
 	 * @param pageId the page ID
@@ -64,7 +71,9 @@ public interface PageOperations {
 	 * @throws InsufficientPermissionException if the user has not granted "manage_pages" permission.
 	 * @throws PageAdministrationException if the user is not a page administrator.
 	 * @throws MissingAuthorizationException if FacebookTemplate was not created with an access token.
+	 * @deprecated Use {@link PostData} instead.
 	 */
+	@Deprecated
 	String post(String pageId, String message);
 	
 	/**
@@ -79,9 +88,24 @@ public interface PageOperations {
 	 * @throws InsufficientPermissionException if the user has not granted "manage_pages" permission.
 	 * @throws PageAdministrationException if the user is not a page administrator.
 	 * @throws MissingAuthorizationException if FacebookTemplate was not created with an access token.
+	 * @deprecated Use {@link PostData} instead.
 	 */
+	@Deprecated
 	String post(String pageId, String message, FacebookLink link);
-
+	
+	/**
+	 * Posts to a page's feed as a page administrator.
+	 * Requires that the application is granted "manage_pages" permission and that the authenticated user be an administrator of the page.
+	 * To post to the page's feed as the authenticated user, use {@link FeedOperations#post(String, String)} instead.
+	 * @param post A {@link PagePostData} with the post's payload.
+	 * @return the ID of the new feed entry
+	 * @throws ApiException if there is an error while communicating with Facebook.
+	 * @throws InsufficientPermissionException if the user has not granted "manage_pages" permission.
+	 * @throws PageAdministrationException if the user is not a page administrator.
+	 * @throws MissingAuthorizationException if FacebookTemplate was not created with an access token.
+	 */
+	String post(PagePostData post);
+	
 	/**
 	 * Posts a photo to a page's album as the page administrator.
 	 * Requires that the application is granted "manage_pages" permission and that the authenticated user be an administrator of the page.
@@ -132,4 +156,26 @@ public interface PageOperations {
 	 */
 	PagedList<Page> searchPlaces(String query, double latitude, double longitude, long distance);
 
+	/**
+	 * Returns the access token for a given page. This makes it possible to perform operations on behalf of a page that 
+	 * aren't already covered by PageOperations methods.
+	 * @param pageId the page to fetch the access token for
+	 * @return the page access token
+	 */
+	String getAccessToken(String pageId);
+	
+	/**
+	 * Returns an {@link Account} object for the user's access to the given page.
+	 * @param pageId the page to fetch the Account details for
+	 * @return an {@link Account} object for the given page ID
+	 */
+	Account getAccount(String pageId);
+	
+	/**
+	 * Returns a {@link Facebook} instance that will act on behalf of the given page.
+	 * @param pageId the page to create a {@link Facebook} instance for.
+	 * @return a {@link Facebook} instance for the page.
+	 */
+	Facebook facebookOperations(String pageId);
+	
 }
